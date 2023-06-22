@@ -1,3 +1,4 @@
+using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -31,6 +32,11 @@ namespace SpineViewer
         public MainWindow()
         {
             this.InitializeComponent();
+
+            if (MicaController.IsSupported())
+                SystemBackdrop = new MicaBackdrop { Kind = MicaKind.BaseAlt };
+            else
+                SystemBackdrop = new DesktopAcrylicBackdrop();
 
             ExtendsContentIntoTitleBar = true;
             SetTitleBar(AppTitleBar);
