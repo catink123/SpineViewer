@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SpineViewer (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "SpineViewer (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
