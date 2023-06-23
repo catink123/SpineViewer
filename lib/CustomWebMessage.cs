@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SpineViewer.lib
 {
-    public enum MessageType { OpenFile, Record, Frame, ParameterChange };
+    public enum MessageType { OpenFile, Record, Frame, ParameterChange, PageLoaded };
     internal class CustomWebMessage
     {
         public MessageType type { get; set; }
@@ -34,7 +34,14 @@ namespace SpineViewer.lib
 
         static public CustomWebMessage FromJSON(string message)
         {
-            return JsonSerializer.Deserialize<CustomWebMessage>(message);
+            var options = new JsonSerializerOptions
+            {
+                Converters =
+                {
+                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+                }
+            };
+            return JsonSerializer.Deserialize<CustomWebMessage>(message, options);
         }
     }
 }

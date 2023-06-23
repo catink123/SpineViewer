@@ -13,9 +13,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text.Json;
 using Windows.Data.Json;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Networking.Sockets;
 using Windows.UI.Popups;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -90,13 +92,25 @@ namespace SpineViewer
 
         private async void InitializeWebView()
         {
-            CoreWebView2Environment environment = await CoreWebView2Environment.CreateAsync();
             await webView.EnsureCoreWebView2Async();
+            webView.WebMessageReceived += WebMessageReceived;
             // Set up local web app for the app
             webView.CoreWebView2.SetVirtualHostNameToFolderMapping("spineviewer.assets", "Assets/web", Microsoft.Web.WebView2.Core.CoreWebView2HostResourceAccessKind.Allow);
             webView.Source = new Uri("https://spineviewer.assets/index.html");
-            // webView.CoreWebView2.OpenDevToolsWindow();
-            sharedBuffer = environment.CreateSharedBuffer(20);
+            webView.CoreWebView2.OpenDevToolsWindow();
+            sharedBuffer = webView.CoreWebView2.Environment.CreateSharedBuffer(50);
+        }
+
+        private void WebMessageReceived(WebView2 sender, CoreWebView2WebMessageReceivedEventArgs args)
+        {
+            var msg = CustomWebMessage.FromJSON(args.WebMessageAsJson);
+            if (msg.type == MessageType.PageLoaded)
+            {
+                webView.CoreWebView2.PostSharedBufferToScript(sharedBuffer, CoreWebView2SharedBufferAccess.ReadWrite, "");
+                Stream stream = (Stream)sharedBuffer.OpenStream();
+                var streamWriter = new StreamWriter(stream);
+                streamWriter.Write("hello");
+            }
         }
     }
 }

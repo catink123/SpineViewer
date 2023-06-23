@@ -14,4 +14,10 @@ window.chrome.webview.addEventListener('message', e => {
     const payload = e.data.data;
     if (actionType in externalActions)
         externalActions[actionType]();
-})
+});
+
+window.chrome.webview.addEventListener('sharedbufferreceived', e => {
+    console.log(e.getBuffer());
+});
+
+window.chrome.webview.postMessage({ type: 'pageLoaded' });
