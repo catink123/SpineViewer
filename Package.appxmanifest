@@ -8,15 +8,15 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="c081982d-f06c-4755-b872-dc7c212a401a"
-    Publisher="CN=qwert"
-    Version="1.0.0.0" />
+    Name="SpineViewer"
+    Publisher="CN=Catink123"
+    Version="1.0.1.0" />
 
   <mp:PhoneIdentity PhoneProductId="c081982d-f06c-4755-b872-dc7c212a401a" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>SpineViewer</DisplayName>
-    <PublisherDisplayName>qwert</PublisherDisplayName>
+    <PublisherDisplayName>Catink123</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -35,7 +35,7 @@
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
         DisplayName="SpineViewer"
-        Description="SpineViewer"
+        Description="An app that allows viewing and exporting of Spine animations."
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">

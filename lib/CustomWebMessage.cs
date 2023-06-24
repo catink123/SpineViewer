@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,17 +9,14 @@ using System.Threading.Tasks;
 
 namespace SpineViewer.lib
 {
-    public enum MessageType { OpenFile, Record, Frame, ParameterChange, PageLoaded };
+    public enum MessageType { OpenFile, Record, ParameterChange, PageLoaded, FrameRendered, ReadyForFrame, BufferRequested };
     internal class CustomWebMessage
     {
-        public MessageType type { get; set; }
-        public dynamic data { get; set; }
+        [JsonPropertyName("type")]
+        public MessageType Type { get; set; }
 
-        public CustomWebMessage(MessageType type, dynamic? data)
-        {
-            this.type = type;
-            this.data = data;
-        }
+        [JsonPropertyName("data")]
+        public dynamic? Data { get; set; }
 
         public string ToJSON()
         {
@@ -32,7 +30,7 @@ namespace SpineViewer.lib
             return JsonSerializer.Serialize(this, options);
         }
 
-        static public CustomWebMessage FromJSON(string message)
+        static public CustomWebMessage? FromJSON(string message)
         {
             var options = new JsonSerializerOptions
             {

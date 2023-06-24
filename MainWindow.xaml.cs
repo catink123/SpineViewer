@@ -7,6 +7,8 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Web.WebView2.Core;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using SpineViewer.lib;
 using System;
 using System.Collections.Generic;
@@ -18,7 +20,9 @@ using Windows.Data.Json;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Networking.Sockets;
+using Windows.Storage.Streams;
 using Windows.UI.Popups;
+using Image = SixLabors.ImageSharp.Image;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -30,7 +34,8 @@ namespace SpineViewer
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        CoreWebView2SharedBuffer sharedBuffer;
+        private WebViewController WebViewController;
+
         public MainWindow()
         {
             this.InitializeComponent();
@@ -43,39 +48,7 @@ namespace SpineViewer
             ExtendsContentIntoTitleBar = true;
             SetTitleBar(AppTitleBar);
 
-            InitializeWebView();
-        }
-
-        private void postWebMessage(CustomWebMessage message)
-        {
-            webView.CoreWebView2.PostWebMessageAsJson(message.ToJSON());
-        }
-
-        private async void openFilePicker(object sender)
-        {
-            var picker = new Windows.Storage.Pickers.FileOpenPicker();
-
-            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-            WinRT.Interop.InitializeWithWindow.Initialize(picker, hWnd);
-
-            picker.FileTypeFilter.Add(".skel");
-
-            var file = await picker.PickSingleFileAsync();
-
-            var dialog = DialogCreator.CreateTextDialog(this, "", "File info");
-
-            if (file != null)
-            {
-                Console.WriteLine(file.Name);
-                dialog.Content = $"File name: {file.Name}";
-            } 
-            else
-            {
-                Console.WriteLine("Operation cancelled.");
-                dialog.Content = "Operation cancelled.";
-            }
-
-            await dialog.ShowAsync();
+            WebViewController = new(ref webView);
         }
 
         private void CommandBarButtonClick(object sender, RoutedEventArgs e)
@@ -84,32 +57,8 @@ namespace SpineViewer
             switch(btn.Name)
             {
                 case "openButton":
-                    openFilePicker(sender);
-                    postWebMessage(new CustomWebMessage(MessageType.OpenFile, null));
+                    WebViewController.PostWebMessage(new CustomWebMessage { Type = MessageType.OpenFile, Data = null });
                     break;
-            }
-        }
-
-        private async void InitializeWebView()
-        {
-            await webView.EnsureCoreWebView2Async();
-            webView.WebMessageReceived += WebMessageReceived;
-            // Set up local web app for the app
-            webView.CoreWebView2.SetVirtualHostNameToFolderMapping("spineviewer.assets", "Assets/web", Microsoft.Web.WebView2.Core.CoreWebView2HostResourceAccessKind.Allow);
-            webView.Source = new Uri("https://spineviewer.assets/index.html");
-            webView.CoreWebView2.OpenDevToolsWindow();
-            sharedBuffer = webView.CoreWebView2.Environment.CreateSharedBuffer(50);
-        }
-
-        private void WebMessageReceived(WebView2 sender, CoreWebView2WebMessageReceivedEventArgs args)
-        {
-            var msg = CustomWebMessage.FromJSON(args.WebMessageAsJson);
-            if (msg.type == MessageType.PageLoaded)
-            {
-                webView.CoreWebView2.PostSharedBufferToScript(sharedBuffer, CoreWebView2SharedBufferAccess.ReadWrite, "");
-                Stream stream = (Stream)sharedBuffer.OpenStream();
-                var streamWriter = new StreamWriter(stream);
-                streamWriter.Write("hello");
             }
         }
     }
