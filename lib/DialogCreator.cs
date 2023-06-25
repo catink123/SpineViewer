@@ -10,16 +10,16 @@ namespace SpineViewer.lib
 {
     internal class DialogCreator
     {
-        public static ContentDialog CreateTextDialog(Window window, string message, string title = "Message")
+        public static ContentDialog CreateDialog(Window window, dynamic message, string title = "Message")
         {
-            ContentDialog dialog = new ContentDialog()
+            ContentDialog dialog = new()
             {
                 Title = title,
                 Content = message,
                 CloseButtonText = "OK",
-                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                XamlRoot = window.Content.XamlRoot
             };
-            dialog.XamlRoot = window.Content.XamlRoot;
             return dialog;
         }
     }

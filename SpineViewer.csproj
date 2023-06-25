@@ -23,6 +23,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Assets\web\js\main.js" />
+    <None Remove="Pages\OpenFileDialogContent.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -57,6 +58,11 @@
     <Reference Include="spine-csharp">
       <HintPath>..\..\..\Downloads\spine-csharp\bin\Release\spine-csharp.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\OpenFileDialogContent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!-- 

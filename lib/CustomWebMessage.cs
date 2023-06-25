@@ -10,6 +10,11 @@ using System.Threading.Tasks;
 namespace SpineViewer.lib
 {
     public enum MessageType { OpenFile, Record, ParameterChange, PageLoaded, FrameRendered, ReadyForFrame, BufferRequested };
+    class OpenFileProperties
+    {
+        [JsonPropertyName("version")]
+        public string? Version { get; set; }
+    }
     internal class CustomWebMessage
     {
         [JsonPropertyName("type")]

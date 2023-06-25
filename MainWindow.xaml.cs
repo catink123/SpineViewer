@@ -1,28 +1,11 @@
 using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.Web.WebView2.Core;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using SpineViewer.lib;
+using SpineViewer.Pages;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text.Json;
-using Windows.Data.Json;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Networking.Sockets;
-using Windows.Storage.Streams;
-using Windows.UI.Popups;
-using Image = SixLabors.ImageSharp.Image;
+using Windows.Storage;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -51,14 +34,45 @@ namespace SpineViewer
             WebViewController = new(ref webView);
         }
 
-        private void CommandBarButtonClick(object sender, RoutedEventArgs e)
+        private async void CommandBarButtonClick(object sender, RoutedEventArgs e)
         {
             AppBarButton btn = (AppBarButton)sender;
             switch(btn.Name)
             {
                 case "openButton":
-                    WebViewController.PostWebMessage(new CustomWebMessage { Type = MessageType.OpenFile, Data = null });
-                    break;
+                    {
+                        var dialogContent = new OpenFileDialogContent(this);
+                        var dialog = DialogCreator.CreateDialog(this, dialogContent, "Open Files");
+                        dialog.PrimaryButtonText = "Open";
+                        dialog.CloseButtonText = "Cancel";
+                        dialog.DefaultButton = ContentDialogButton.Primary;
+                        if (await dialog.ShowAsync() is ContentDialogResult.Primary)
+                        {
+                            var version = dialogContent.SpineVersion;
+                            var skelFile = dialogContent.SkeletonFile;
+                            var atlasFile = dialogContent.AtlasFile;
+                            if (skelFile == null || atlasFile == null)
+                            {
+                                await DialogCreator.CreateDialog(this, "Invalid Skeleton or Atlas file specified!", "Error").ShowAsync();
+                                return;
+                            }
+
+                            StorageFile textureFile;
+                            try
+                            {
+                                textureFile = await StorageFile.GetFileFromPathAsync(atlasFile.Path.Replace(atlasFile.FileType, ".png"));
+                            }
+                            catch(Exception ex)
+                            {
+                                await DialogCreator.CreateDialog(this, $"Unable to access the Texture file!\nDetails: {ex.Message}", "Error").ShowAsync();
+                                return;
+                            }
+
+                            await DialogCreator.CreateDialog(this, $"Selected file paths:\n{skelFile.Path}\n{atlasFile.Path}\n{textureFile.Path}\n\nSelected Spine Version: {version}").ShowAsync();
+                            // WebViewController.PostWebMessage(new CustomWebMessage { Type = MessageType.OpenFile, Data = new OpenFileProperties { Version = version } });
+                        }
+                        break;
+                    }
             }
         }
     }

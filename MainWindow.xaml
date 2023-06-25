@@ -53,7 +53,7 @@
                                         <CheckBox x:Name="IsLoop" Content="Loop"/>
                                         <Grid HorizontalAlignment="Stretch" ColumnSpacing="8" RowSpacing="8">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
+                                                <ColumnDefinition/>
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
 

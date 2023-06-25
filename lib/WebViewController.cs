@@ -38,7 +38,7 @@ namespace SpineViewer.lib
         {
             int bufferSize = FrameManager.FrameWidth * FrameManager.FrameHeight * 4;
             SharedBuffer = WebView.CoreWebView2.Environment.CreateSharedBuffer((ulong)bufferSize);
-            WebView.CoreWebView2.PostSharedBufferToScript(SharedBuffer, CoreWebView2SharedBufferAccess.ReadWrite, "");
+            WebView.CoreWebView2.PostSharedBufferToScript(SharedBuffer, CoreWebView2SharedBufferAccess.ReadWrite, "{ \"bufferName\": \"imageBuffer\" }");
         }
 
         private async void WebMessageReceived(WebView2 sender, CoreWebView2WebMessageReceivedEventArgs args)
